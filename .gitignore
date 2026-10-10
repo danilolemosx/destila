@@ -3,3 +3,4 @@
 /app/binaries/
 node_modules/
 .DS_Store
+/testes-ui/capturas/

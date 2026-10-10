@@ -3,46 +3,91 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Modelo</title>
+  <title>Destila</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="topo">
-    <div class="marca">MODELO<span>.</span></div>
-    <div class="subtitulo">descreva o app<br>em duas linhas</div>
+    <div class="marca">DESTILA<span>.</span></div>
+    <div class="subtitulo">Conversor<br>de áudio</div>
     <span class="espaco"></span>
+    <button id="engrenagem" class="engrenagem" title="Ajustes">⚙</button>
   </header>
 
   <main class="corpo">
-    <section class="bilhete">
+    <!-- arquivos -->
+    <section class="bilhete lista">
+      <div class="cab">
+        <div><div class="rot">Lote</div><b id="contagem">Nenhum arquivo</b></div>
+        <span class="espaco"></span>
+        <button id="limpar" class="rot link">Limpar lista ✕</button>
+      </div>
       <div id="vazio" class="vazio">
-        <b>ARRASTE SEUS WAVS</b>
-        <span>para a fila ao lado, ou</span>
-        <button id="adicionarVazio" class="botao-tinta">+ ADICIONAR WAVS…</button>
+        <b>ARRASTE ÁUDIOS<br>OU VÍDEOS</b>
+        <span>qualquer formato · um ou vários de uma vez</span>
+        <button id="adicionarVazio" class="botao-tinta">+ ADICIONAR ARQUIVOS…</button>
       </div>
-      <div id="detalhe" class="miolo oculto">
-        <div class="cabecalho">
-          <div class="campo nome"><span class="rot">Arquivo</span><b id="dNome"></b></div>
-          <div class="campo"><span class="rot">Taxa</span><b id="dTaxa" class="tab"></b></div>
-          <div class="campo"><span class="rot">Canais</span><b id="dCanais" class="tab"></b></div>
-          <div class="campo"><span class="rot">Duração</span><b id="dDuracao" class="tab"></b></div>
-        </div>
-        <div class="grande"><span class="rot">Pico</span><b id="dPico" class="tab"></b></div>
-        <div id="dAvisos" class="avisos"></div>
-      </div>
+      <div id="linhas" class="linhas"></div>
+      <button id="solta" class="solta"><b>Arraste mais arquivos aqui</b> · ou clique para escolher</button>
+      <div class="rodape"><b id="nSaidas">0 arquivos de saída</b><span id="explica"></span></div>
     </section>
 
-    <section class="coluna">
-      <h3>FILA <span id="contagem">00</span></h3>
-      <div id="lista" class="lista"></div>
-      <button id="soltar" class="soltar"><b>+ WAVS</b>arraste aqui ou clique</button>
+    <!-- destino -->
+    <section class="bilhete destino">
+      <div class="formato-grande">
+        <b id="fNome">MXF</b>
+        <small id="fDescricao"></small>
+      </div>
+
+      <div class="grupo">
+        <div class="rot">Edição</div>
+        <div class="chips" data-grupo="edicao"></div>
+        <div class="rot" style="margin-top:4px">Sem perda · Compactado · 5.1</div>
+        <div class="chips" data-grupo="principal"></div>
+        <div class="chips oculto" data-grupo="outros"></div>
+      </div>
+
+      <div class="par">
+        <div class="grupo"><div class="rot">Taxa · kHz</div><div id="taxa" class="seg"></div></div>
+        <div class="grupo"><div id="rotBits" class="rot">Bits</div><div id="bits" class="seg"></div></div>
+      </div>
+
+      <div class="grupo">
+        <div class="rot">Canais</div>
+        <div id="canais" class="seg">
+          <button data-v="juntos">Manter juntos</button>
+          <button data-v="separar">Separar em monos</button>
+        </div>
+        <div id="notaCanais" class="nota"></div>
+      </div>
+
+      <div class="grupo">
+        <div class="rot">Salvar em</div>
+        <div class="pasta"><span id="pastaNome">Ao lado do original</span><span class="espaco"></span><button id="pastaVolta" class="link oculto" title="Voltar para ao lado do original">✕</button><button id="pastaTroca" class="link">TROCAR ▸</button></div>
+      </div>
+
+      <button id="acao" class="botao" disabled>DESTILAR<small id="resumo">NADA NO LOTE</small></button>
+
+      <!-- ajustes (engrenagem) -->
+      <div id="ajustes" class="ajustes oculto">
+        <div class="formato-grande"><b class="menor">AJUSTES</b><button id="fecharAjustes" class="link rot">Fechar ✕</button></div>
+        <div class="grupo">
+          <div class="rot">Velocidade do timecode</div>
+          <div class="nota">Usada quando o arquivo não informa a velocidade (WAV sem iXML) e no MXF de arquivos sem timecode.</div>
+          <div id="fps" class="chips"></div>
+        </div>
+        <div class="grupo">
+          <div class="rot">Arquivos sem timecode</div>
+          <div class="nota">Começam em <b>00:00:00:00</b>.</div>
+        </div>
+        <div class="grupo">
+          <div class="rot">Nunca sobrescreve</div>
+          <div class="nota">Se o arquivo já existir, o novo ganha um número no fim (<b>_2</b>, <b>_3</b>…).</div>
+        </div>
+        <div id="versao" class="nota rodape-ajustes"></div>
+      </div>
     </section>
   </main>
-
-  <footer class="rodape">
-    <span class="espaco"></span>
-    <button id="acao" class="principal" disabled>PROCESSAR<small id="resumo">NADA NA FILA</small></button>
-  </footer>
 
   <script src="app.js"></script>
 </body>

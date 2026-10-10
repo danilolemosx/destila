@@ -25,6 +25,12 @@ fn main() -> ExitCode {
             "-m" => op.separar = true,
             "-o" => op.destino = Some(PathBuf::from(valor())),
             "--fps" => op.fps = Fps::ler(&valor(), false).unwrap_or(op.fps),
+            // usado no teste da interface com dados simulados
+            "--json-formatos" => {
+                let v: Vec<_> = motor::VELOCIDADES.iter().map(|f| serde_json::json!({ "fps": f, "rotulo": f.rotulo() })).collect();
+                println!("{}", serde_json::json!({ "formatos": motor::FORMATOS, "velocidades": v, "versao": env!("CARGO_PKG_VERSION"), "erro": null }));
+                return ExitCode::SUCCESS;
+            }
             "-h" | "--help" => {
                 println!("{USO}");
                 return ExitCode::SUCCESS;
