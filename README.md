@@ -1,42 +1,44 @@
-# Modelo de app desktop (Mac e Windows)
+# DESTILA — conversor de áudio
 
-Ponto de partida para os apps do Danilo, com o que funcionou no **Decanta**:
+App para Mac (Apple Silicon e Intel) e Windows que converte áudio, e o áudio de vídeos, para os formatos
+de edição e de entrega, mantendo o timecode do original.
 
-- **Tauri v2**: um app leve para Mac (Apple Silicon e Intel) e Windows, com a lógica em Rust.
-- **`motor/`**: a lógica do app, testável sozinha, com uma linha de comando (`motor-cli`).
-- **`app/`**: a janela, que liga a interface ao motor.
-- **`ui/`**: a interface em HTML/CSS/JS, no estilo "bilhete" (papel, tinta e vermelho, fonte Archivo).
-- **GitHub Actions**: testes a cada envio e instaladores ao publicar uma Release.
-- **Sem assinatura paga**: Mac com assinatura ad-hoc e Windows com instalador comum. Os avisos de segurança e
-  como contorná-los estão em `docs/LEIA-ME-modelo.txt`.
+- **Arraste** um ou vários arquivos de áudio ou vídeo (qualquer formato: WAV, BWF polifônico, MOV, MP4, MXF,
+  MP3, M4A, AIFF, FLAC…).
+- **Escolha o formato**: WAV (Broadcast Wave), **MXF Avid** (OP-Atom), AIFF, FLAC, ALAC, MP3, AAC, AC3 e, em
+  "+ OUTROS", E-AC3, OGG, OPUS, WMA, MP2, CAF e W64.
+- **Taxa** (original, 44,1, 48 ou 96 kHz), **bits** (16, 24 ou 32 float) ou **qualidade** (kbps).
+- **Manter juntos ou separar em monos**: o 5.1 vira 6 monos (`_L _R _C _LFE _Ls _Rs`); arquivos de gravador
+  de som usam o nome das faixas do iXML (`_BOOM _LAV1…`).
+- **Timecode do original** no WAV (bext) e no MXF (alinhado ao quadro, como o Avid exige).
+- Nunca sobrescreve: se o arquivo já existir, o novo ganha `_2`, `_3`…
 
-O exemplo que vem pronto lê WAVs arrastados para a janela e mostra taxa, canais, duração, pico e clip.
-
-## Começar um app novo
-
-1. No GitHub, clique em **Use this template → Create a new repository**.
-2. Abra uma sessão do Claude Code no repositório novo e descreva o app. O `CLAUDE.md` explica o jeito de
-   trabalhar, e `docs/processo.md` traz o passo a passo e as lições do Decanta.
+Por dentro: [Tauri v2](https://tauri.app), motor em Rust (`motor/`), e programas embutidos compilados no
+GitHub Actions: **ffmpeg/ffprobe** (LGPL, com lame, opus e vorbis) e **raw2bmx** (BBC bmx, para o MXF).
 
 ## Desenvolvimento
 
 ```bash
-cargo test -p motor                                   # testes do motor
-cargo run --release -p motor --bin motor-cli -- a.wav # motor pela linha de comando
-cargo tauri dev                                       # (em app/) abre o app
+cargo test -p motor                                          # testes (precisam de ffmpeg; MXF precisa de raw2bmx)
+cargo run -p motor --bin motor-cli -- arquivo.mov            # inspeciona
+cargo run -p motor --bin motor-cli -- -f mxf -m arquivo.mov  # converte (ver --help)
+scripts/compilar-ferramentas.sh aarch64-apple-darwin         # compila ffmpeg/ffprobe/raw2bmx em app/binaries
+testes-ui/capturar.sh                                        # captura a interface com dados simulados
+cd app && npx @tauri-apps/cli@2 dev                          # abre o app
 ```
-
-No Linux, o app precisa de `libwebkit2gtk-4.1-dev libgtk-3-dev librsvg2-dev`.
 
 ## Publicar uma versão
 
 1. Atualize `"version"` em `app/tauri.conf.json`.
-2. Confira que os **Testes** passaram na aba Actions.
-3. Em **Releases → Draft a new release**, crie a tag `vX.Y.Z` (o alvo é o branch com o código), dê o título e
-   clique em **Publish release**.
+2. Confira na aba **Actions** que **Testes** e **Ferramentas embutidas** passaram.
+3. Em **Releases → Draft a new release**, crie a tag `vX.Y.Z`, dê o título `Destila vX.Y.Z` e clique em
+   **Publish release**.
 4. Em 20 a 30 minutos, os instaladores aparecem no fim da página da Release:
-   `..._aarch64.dmg` (Mac M1–M4), `..._x64.dmg` (Mac Intel) e `..._x64-setup.exe` (Windows).
+   `Destila_X.Y.Z_aarch64.dmg` (Mac M1–M4), `Destila_X.Y.Z_x64.dmg` (Mac Intel) e
+   `Destila_X.Y.Z_x64-setup.exe` (Windows).
 
 ## Licenças
-- Este modelo: MIT OR Apache-2.0.
+- Destila: MIT OR Apache-2.0.
+- FFmpeg (LGPL 2.1+), LAME (LGPL), Opus e Vorbis (BSD), bmx (BSD 3-Clause), embutidos como programas separados.
+  Os códigos-fonte e as versões exatas estão em `scripts/compilar-ferramentas.sh`.
 - Fonte Archivo (Omnibus-Type): SIL Open Font License 1.1, veja `ui/fonts/OFL.txt`.

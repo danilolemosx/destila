@@ -27,6 +27,7 @@
     "active": true,
     "targets": ["app", "dmg", "msi", "nsis"],
     "category": "Video",
+    "externalBin": ["binaries/ffmpeg", "binaries/ffprobe", "binaries/raw2bmx"],
     "shortDescription": "Conversor de áudio para editores",
     "icon": [
       "icons/32x32.png",

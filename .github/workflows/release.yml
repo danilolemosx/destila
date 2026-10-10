@@ -26,14 +26,17 @@ jobs:
             os: macos-latest
             args: --target aarch64-apple-darwin
             alvo: aarch64-apple-darwin
+            triplo: aarch64-apple-darwin
           - nome: macOS Intel
             os: macos-latest
             args: --target x86_64-apple-darwin
             alvo: x86_64-apple-darwin
+            triplo: x86_64-apple-darwin
           - nome: Windows
             os: windows-latest
             args: ""
             alvo: ""
+            triplo: x86_64-pc-windows-msvc
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -43,8 +46,35 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           key: ${{ matrix.alvo }}
-      # Se o app precisar de um programa externo embutido (como o bmx no Decanta), compile-o aqui
-      # para app/binaries/<nome>-<alvo> e declare "externalBin" no tauri.conf.json.
+      # ffmpeg, ffprobe e raw2bmx embutidos (app/binaries/<nome>-<alvo>, ver "externalBin" no tauri.conf.json).
+      # Normalmente vêm do cache do workflow "Ferramentas embutidas"; se não, compila aqui (20 a 40 min).
+      - name: Cache das ferramentas
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            app/binaries/*-${{ matrix.triplo }}*
+            target/ferramentas/${{ matrix.triplo }}/mxf2raw*
+          key: ferramentas-${{ matrix.triplo }}-${{ hashFiles('scripts/compilar-ferramentas.sh') }}
+      - name: Compilar ferramentas (Mac)
+        if: runner.os == 'macOS' && steps.cache.outputs.cache-hit != 'true'
+        run: brew install nasm pkg-config && scripts/compilar-ferramentas.sh ${{ matrix.triplo }} tudo
+      - uses: msys2/setup-msys2@v2
+        if: runner.os == 'Windows' && steps.cache.outputs.cache-hit != 'true'
+        with:
+          msystem: MINGW64
+          update: false
+          install: >-
+            mingw-w64-x86_64-toolchain mingw-w64-x86_64-nasm mingw-w64-x86_64-pkgconf
+            mingw-w64-x86_64-zlib make diffutils tar xz curl
+      - name: Compilar ffmpeg (Windows)
+        if: runner.os == 'Windows' && steps.cache.outputs.cache-hit != 'true'
+        shell: msys2 {0}
+        run: scripts/compilar-ferramentas.sh ${{ matrix.triplo }} ffmpeg
+      - name: Compilar raw2bmx (Windows)
+        if: runner.os == 'Windows' && steps.cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: scripts/compilar-ferramentas.sh ${{ matrix.triplo }} bmx
       - uses: actions/setup-node@v4
         with:
           node-version: 22
