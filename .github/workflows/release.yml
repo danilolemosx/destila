@@ -54,7 +54,7 @@ jobs:
         with:
           path: |
             app/binaries/*-${{ matrix.triplo }}*
-            target/ferramentas/${{ matrix.triplo }}/mxf2raw*
+            ferramentas-teste/mxf2raw-${{ matrix.triplo }}*
           key: ferramentas-${{ matrix.triplo }}-${{ hashFiles('scripts/compilar-ferramentas.sh') }}
       - name: Compilar ferramentas (Mac)
         if: runner.os == 'macOS' && steps.cache.outputs.cache-hit != 'true'

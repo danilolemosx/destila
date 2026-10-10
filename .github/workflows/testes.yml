@@ -38,7 +38,7 @@ jobs:
         with:
           path: |
             app/binaries/raw2bmx-x86_64-unknown-linux-gnu
-            target/ferramentas/x86_64-unknown-linux-gnu/mxf2raw
+            ferramentas-teste/mxf2raw-x86_64-unknown-linux-gnu
           key: bmx-linux-${{ hashFiles('scripts/compilar-ferramentas.sh') }}
       - name: Compilar raw2bmx (Linux)
         if: runner.os == 'Linux' && steps.bmx.outputs.cache-hit != 'true'
@@ -48,7 +48,7 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/bmx"
           cp app/binaries/raw2bmx-x86_64-unknown-linux-gnu "$RUNNER_TEMP/bmx/raw2bmx"
-          cp target/ferramentas/x86_64-unknown-linux-gnu/mxf2raw "$RUNNER_TEMP/bmx/mxf2raw"
+          cp ferramentas-teste/mxf2raw-x86_64-unknown-linux-gnu "$RUNNER_TEMP/bmx/mxf2raw"
           echo "$RUNNER_TEMP/bmx" >> "$GITHUB_PATH"
       - name: Testes do motor
         run: cargo test --release -p motor

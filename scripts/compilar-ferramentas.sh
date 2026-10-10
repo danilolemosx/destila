@@ -127,8 +127,9 @@ compilar_bmx() {
   exe="$(find "$b" -type f -name "raw2bmx$EXE" | head -1)"
   cp "$exe" "$SAIDA/raw2bmx-$ALVO$EXE"
   strip "$SAIDA/raw2bmx-$ALVO$EXE" 2>/dev/null || true
-  # mxf2raw: só para os testes (não vai no instalador)
-  cp "$(find "$b" -type f -name "mxf2raw$EXE" | head -1)" "$TRAB/mxf2raw$EXE"
+  # mxf2raw: só para os testes (não vai no instalador). Fora de target/, que o cache do Rust limpa.
+  mkdir -p "$RAIZ/ferramentas-teste"
+  cp "$(find "$b" -type f -name "mxf2raw$EXE" | head -1)" "$RAIZ/ferramentas-teste/mxf2raw-$ALVO$EXE"
 }
 
 case "$PARTE" in

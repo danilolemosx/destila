@@ -37,7 +37,7 @@ jobs:
         with:
           path: |
             app/binaries/*-${{ matrix.alvo }}*
-            target/ferramentas/${{ matrix.alvo }}/mxf2raw*
+            ferramentas-teste/mxf2raw-${{ matrix.alvo }}*
           key: ferramentas-${{ matrix.alvo }}-${{ hashFiles('scripts/compilar-ferramentas.sh') }}
 
       # --- Mac ---
@@ -75,7 +75,7 @@ jobs:
           for p in ffmpeg ffprobe raw2bmx; do cp "app/binaries/$p-${{ matrix.alvo }}$ext" "$RUNNER_TEMP/ferr/$p$ext"; done
           # mxf2raw (usado pelos testes) numa pasta à parte, no PATH; o ffmpeg do PATH continua sendo o completo
           mkdir -p "$RUNNER_TEMP/mxf2raw"
-          cp "target/ferramentas/${{ matrix.alvo }}/mxf2raw$ext" "$RUNNER_TEMP/mxf2raw/mxf2raw$ext"
+          cp "ferramentas-teste/mxf2raw-${{ matrix.alvo }}$ext" "$RUNNER_TEMP/mxf2raw/mxf2raw$ext"
           chmod +x "$RUNNER_TEMP/ferr/"* "$RUNNER_TEMP/mxf2raw/"* || true
           echo "DESTILA_FERRAMENTAS=$RUNNER_TEMP/ferr" >> "$GITHUB_ENV"
           echo "$RUNNER_TEMP/mxf2raw" >> "$GITHUB_PATH"
