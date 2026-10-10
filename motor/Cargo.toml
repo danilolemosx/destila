@@ -1,14 +1,17 @@
 [package]
 name = "motor"
-description = "Motor do app: toda a lógica fica aqui, separada da interface"
+description = "Motor do Destila: inspeção e conversão de áudio (ffmpeg, ffprobe e raw2bmx)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 
 [dependencies]
 anyhow = "1.0"
-hound = "3.5"
 serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[dev-dependencies]
+hound = "3.5"
 
 [[bin]]
 name = "motor-cli"

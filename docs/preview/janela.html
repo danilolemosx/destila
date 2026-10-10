@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Destila — preview da janela</title>
+<style>
+@font-face { font-family: "Archivo"; src: url("../../ui/fonts/archivo.woff2") format("woff2"); font-weight: 100 900; font-stretch: 62% 125%; }
+:root {
+  --fundo: #2e2d2b; --papel: #efe5cf; --papel2: #e4d8bd; --tinta: #34312d; --tinta2: #6e665a;
+  --linha: #c9bb9c; --destaque: #d2382f; --apagado: #a49c8c; --ok: #3c7a4b; --ambar: #a3681a;
+}
+* { box-sizing: border-box; margin: 0; }
+html, body { height: 100%; }
+body { background: #1d1c1b; display: flex; align-items: center; justify-content: center; font: 500 14px/1.35 "Archivo", -apple-system, sans-serif; }
+
+/* janela do Mac */
+.janela { width: 1120px; height: 720px; background: var(--fundo); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 80px rgba(0,0,0,.5); color: var(--papel); }
+.barra { height: 30px; display: flex; align-items: center; gap: 8px; padding: 0 12px; }
+.barra i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+.app { flex: 1; display: flex; flex-direction: column; gap: 16px; padding: 4px 26px 22px; min-height: 0; }
+
+.rot { font-size: 10.5px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: var(--tinta2); white-space: nowrap; }
+.tab { font-variant-numeric: tabular-nums; }
+
+.topo { display: flex; align-items: center; gap: 16px; }
+.marca { font-size: 34px; font-weight: 900; font-stretch: 125%; letter-spacing: 1px; line-height: 1; }
+.marca span { color: var(--destaque); }
+.subtitulo { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--apagado); border-left: 2px solid var(--destaque); padding-left: 12px; line-height: 1.5; }
+.espaco { flex: 1; }
+.engrenagem { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--apagado); opacity: .7; display: grid; place-items: center; color: var(--apagado); font-size: 17px; }
+
+.corpo { flex: 1; display: flex; gap: 18px; min-height: 0; }
+.bilhete { background: var(--papel); color: var(--tinta); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+
+/* coluna dos arquivos */
+.lista { flex: 1; min-width: 0; }
+.lista .cab { display: flex; align-items: flex-end; gap: 14px; padding: 16px 22px 10px; border-bottom: 2px solid var(--tinta); }
+.lista .cab b { font-size: 20px; font-weight: 800; }
+.linhas { flex: 1; overflow: hidden; }
+.linha { display: grid; grid-template-columns: 54px 1fr 74px 78px 70px 92px; align-items: center; gap: 10px; padding: 11px 22px; border-bottom: 1px dashed var(--linha); }
+.tipo { font-size: 10px; font-weight: 800; letter-spacing: 1px; text-align: center; padding: 3px 0; border-radius: 3px; border: 1.5px solid var(--tinta); }
+.tipo.video { background: var(--tinta); color: var(--papel); }
+.nome { font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nome small { display: block; font-weight: 500; font-size: 11.5px; color: var(--tinta2); }
+.info { font-size: 12.5px; font-weight: 600; color: var(--tinta2); }
+.can { font-size: 12.5px; font-weight: 800; }
+.can.sur { color: var(--destaque); }
+.estado { font-size: 11px; font-weight: 800; letter-spacing: 1px; text-align: right; }
+.estado.ok { color: var(--ok); }
+.estado.vai { color: var(--destaque); }
+.barrinha { height: 4px; background: var(--linha); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+.barrinha i { display: block; height: 100%; width: 62%; background: var(--destaque); }
+.monos { grid-column: 2 / -1; display: flex; gap: 5px; margin-top: -2px; }
+.monos span { font-size: 10.5px; font-weight: 800; letter-spacing: .5px; padding: 2px 7px; border-radius: 3px; background: var(--papel2); border: 1px solid var(--linha); }
+.solta { margin: auto 22px 18px; border: 2px dashed var(--linha); border-radius: 8px; padding: 14px; text-align: center; color: var(--tinta2); font-weight: 600; font-size: 13px; }
+.solta b { color: var(--tinta); }
+.lista .rodape { display: flex; gap: 18px; padding: 10px 22px; background: var(--papel2); border-top: 2px solid var(--tinta); font-size: 12.5px; font-weight: 700; }
+.lista .rodape span { color: var(--tinta2); font-weight: 600; }
+
+/* coluna do destino (canhoto do bilhete) */
+.destino { width: 360px; flex: none; padding: 16px 22px 20px; gap: 14px; }
+.destino::before { content: ""; position: absolute; left: -9px; top: 0; bottom: 0; width: 18px; background: radial-gradient(circle at 9px 9px, var(--fundo) 6px, transparent 6.5px) 0 0 / 18px 18px repeat-y; }
+.formato-grande { display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 2px solid var(--tinta); padding-bottom: 10px; }
+.formato-grande b { font-size: 72px; font-weight: 900; font-stretch: 125%; color: var(--destaque); line-height: .9; letter-spacing: -1px; }
+.formato-grande small { font-size: 11.5px; font-weight: 700; color: var(--tinta2); text-align: right; line-height: 1.35; }
+.grupo { display: flex; flex-direction: column; gap: 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.chip { font-size: 11.5px; font-weight: 800; letter-spacing: .6px; padding: 5px 9px; border-radius: 4px; border: 1.5px solid var(--tinta); }
+.chip.on { background: var(--destaque); border-color: var(--destaque); color: var(--papel); }
+.chip.mais { border-style: dashed; color: var(--tinta2); border-color: var(--tinta2); }
+.seg { display: flex; border: 1.5px solid var(--tinta); border-radius: 5px; overflow: hidden; }
+.seg span { flex: 1; text-align: center; font-size: 12px; font-weight: 800; padding: 6px 4px; border-left: 1.5px solid var(--tinta); white-space: nowrap; }
+.seg span:first-child { border-left: none; }
+.seg span.on { background: var(--tinta); color: var(--papel); }
+.par { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.nota { font-size: 11.5px; color: var(--tinta2); font-weight: 600; }
+.nota b { color: var(--destaque); }
+.pasta { display: flex; align-items: center; justify-content: space-between; font-size: 12.5px; font-weight: 700; border-bottom: 1.5px solid var(--tinta); padding-bottom: 4px; }
+.pasta u { text-decoration: none; font-size: 11px; color: var(--tinta2); letter-spacing: 1px; }
+.botao { margin-top: auto; background: var(--destaque); color: var(--papel); border-radius: 8px; padding: 14px; text-align: center; font-size: 20px; font-weight: 900; font-stretch: 125%; letter-spacing: 2px; }
+.botao small { display: block; font-size: 11px; font-weight: 700; font-stretch: 100%; letter-spacing: 1px; opacity: .85; }
+.legenda { position: fixed; top: 14px; left: 30px; color: #bbb; font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+.legenda span { display: inline-block; width: 14px; height: 14px; border-radius: 3px; margin-left: 6px; vertical-align: -2px; }
+</style>
+<script>
+const PALETAS = {
+  cobre:  { nome: "A · Cobre do alambique", fundo: "#262a29", papel: "#f2e9da", papel2: "#e6d9c2", tinta: "#2b2c2a", tinta2: "#6b675e", linha: "#cdbfa6", destaque: "#b5592a", apagado: "#9ea39d", body: "#171a19" },
+  ambar:  { nome: "B · Âmbar do whisky",    fundo: "#2b211a", papel: "#f4e3bf", papel2: "#ead39f", tinta: "#3a2a1d", tinta2: "#7a6248", linha: "#d4b98a", destaque: "#d4861a", apagado: "#ad9a83", body: "#1a140f" },
+  gin:    { nome: "C · Garrafa de gin",     fundo: "#1e2a2f", papel: "#e8ede6", papel2: "#d8e1d7", tinta: "#20333a", tinta2: "#5b6d70", linha: "#b9c8c0", destaque: "#1f7f86", apagado: "#8fa3a6", body: "#121a1d" }
+};
+const id = new URLSearchParams(location.search).get("p");
+const P = PALETAS[id];
+if (P) {
+  const r = document.documentElement.style;
+  for (const k of ["fundo","papel","papel2","tinta","tinta2","linha","destaque","apagado"]) r.setProperty("--" + k, P[k]);
+  addEventListener("DOMContentLoaded", () => {
+    document.body.style.background = P.body;
+    const l = document.createElement("div"); l.className = "legenda";
+    l.innerHTML = P.nome + ["fundo","papel","tinta","destaque"].map(k => `<span style="background:${P[k]}"></span>`).join("");
+    document.body.appendChild(l);
+  });
+}
+</script>
+</head>
+<body>
+<div class="janela">
+  <div class="barra"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+  <div class="app">
+
+    <div class="topo">
+      <div class="marca">DESTILA<span>.</span></div>
+      <div class="subtitulo">Conversor<br>de áudio</div>
+      <div class="espaco"></div>
+      <div class="engrenagem">⚙</div>
+    </div>
+
+    <div class="corpo">
+      <!-- arquivos -->
+      <div class="bilhete lista">
+        <div class="cab">
+          <div><div class="rot">Lote</div><b>4 arquivos</b></div>
+          <div class="espaco"></div>
+          <div class="rot" style="padding-bottom:3px">Limpar lista ✕</div>
+        </div>
+        <div class="linhas">
+          <div class="linha">
+            <div class="tipo video">MOV</div>
+            <div class="nome">EP18_CENA01_TAKE3.mov<small>TC 01:02:14:08 · 23,976</small></div>
+            <div class="can sur">5.1</div>
+            <div class="info tab">48 kHz</div>
+            <div class="info tab">02:41</div>
+            <div class="estado vai">62%<div class="barrinha"><i></i></div></div>
+            <div class="monos"><span>L</span><span>R</span><span>C</span><span>LFE</span><span>Ls</span><span>Rs</span></div>
+          </div>
+          <div class="linha">
+            <div class="tipo">WAV</div>
+            <div class="nome">BOOM_SC12_T04.wav<small>TC 14:22:05:11 · 25</small></div>
+            <div class="can">Poli · 4</div>
+            <div class="info tab">96 kHz</div>
+            <div class="info tab">04:10</div>
+            <div class="estado ok">PRONTO ✓</div>
+          </div>
+          <div class="linha">
+            <div class="tipo">MP3</div>
+            <div class="nome">trilha_referencia_v2.mp3<small>sem timecode · começa em 00:00:00:00</small></div>
+            <div class="can">Estéreo</div>
+            <div class="info tab">44,1 kHz</div>
+            <div class="info tab">03:27</div>
+            <div class="estado">NA FILA</div>
+          </div>
+          <div class="linha">
+            <div class="tipo">M4A</div>
+            <div class="nome">entrevista_celular.m4a<small>sem timecode · começa em 00:00:00:00</small></div>
+            <div class="can">Mono</div>
+            <div class="info tab">44,1 kHz</div>
+            <div class="info tab">12:05</div>
+            <div class="estado">NA FILA</div>
+          </div>
+        </div>
+        <div class="solta"><b>Arraste mais arquivos aqui</b> · áudio ou vídeo, qualquer formato</div>
+        <div class="rodape"><div>13 arquivos de saída</div><span>· 5.1 vira 6 monos · polifônico vira 4 monos</span></div>
+      </div>
+
+      <!-- destino -->
+      <div class="bilhete destino">
+        <div class="formato-grande">
+          <b>MXF</b>
+          <small>AVID OP-ATOM<br>TIMECODE DO ORIGINAL</small>
+        </div>
+
+        <div class="grupo">
+          <div class="rot">Edição</div>
+          <div class="chips"><span class="chip">WAV</span><span class="chip on">MXF AVID</span><span class="chip">AIFF</span></div>
+          <div class="rot" style="margin-top:4px">Sem perda · Compactado · 5.1</div>
+          <div class="chips"><span class="chip">FLAC</span><span class="chip">ALAC</span><span class="chip">MP3</span><span class="chip">AAC</span><span class="chip">AC3</span><span class="chip mais">+ OUTROS</span></div>
+        </div>
+
+        <div class="par">
+          <div class="grupo"><div class="rot">Taxa</div><div class="seg"><span>44,1</span><span class="on">48</span><span>96</span></div></div>
+          <div class="grupo"><div class="rot">Bits</div><div class="seg"><span>16</span><span class="on">24</span><span>32</span></div></div>
+        </div>
+
+        <div class="grupo">
+          <div class="rot">Canais</div>
+          <div class="seg"><span>Manter juntos</span><span class="on">Separar em monos</span></div>
+          <div class="nota">MXF do Avid é sempre <b>um arquivo por canal</b>.</div>
+        </div>
+
+        <div class="grupo">
+          <div class="rot">Salvar em</div>
+          <div class="pasta"><span>Ao lado do original</span><u>TROCAR ▸</u></div>
+        </div>
+
+        <div class="botao">DESTILAR<small>4 ARQUIVOS → 13 MXF</small></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
