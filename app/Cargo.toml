@@ -1,12 +1,12 @@
 [package]
-name = "modelo"
-description = "Modelo de app desktop (Tauri v2) para Mac e Windows"
+name = "destila"
+description = "Destila: conversor de áudio para editores (Mac e Windows)"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 
 [lib]
-name = "modelo_lib"
+name = "destila_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
