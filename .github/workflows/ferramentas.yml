@@ -73,10 +73,12 @@ jobs:
           mkdir -p "$RUNNER_TEMP/ferr"
           ext=""; [ "$RUNNER_OS" = "Windows" ] && ext=".exe"
           for p in ffmpeg ffprobe raw2bmx; do cp "app/binaries/$p-${{ matrix.alvo }}$ext" "$RUNNER_TEMP/ferr/$p$ext"; done
-          cp "target/ferramentas/${{ matrix.alvo }}/mxf2raw$ext" "$RUNNER_TEMP/ferr/mxf2raw$ext"
-          chmod +x "$RUNNER_TEMP/ferr/"* || true
+          # mxf2raw (usado pelos testes) numa pasta à parte, no PATH; o ffmpeg do PATH continua sendo o completo
+          mkdir -p "$RUNNER_TEMP/mxf2raw"
+          cp "target/ferramentas/${{ matrix.alvo }}/mxf2raw$ext" "$RUNNER_TEMP/mxf2raw/mxf2raw$ext"
+          chmod +x "$RUNNER_TEMP/ferr/"* "$RUNNER_TEMP/mxf2raw/"* || true
           echo "DESTILA_FERRAMENTAS=$RUNNER_TEMP/ferr" >> "$GITHUB_ENV"
-          echo "$RUNNER_TEMP/ferr" >> "$GITHUB_PATH"
+          echo "$RUNNER_TEMP/mxf2raw" >> "$GITHUB_PATH"
       - name: ffmpeg completo para gerar os arquivos de teste
         if: matrix.alvo != 'x86_64-apple-darwin'
         shell: bash
@@ -90,8 +92,7 @@ jobs:
         if: matrix.alvo != 'x86_64-apple-darwin'
         shell: bash
         run: |
-          # o ffmpeg do sistema (completo) gera os arquivos de teste; o motor usa o compilado
-          export PATH="$(echo "$PATH" | tr ':' '\n' | grep -v "$RUNNER_TEMP/ferr" | paste -sd: -):$RUNNER_TEMP/ferr"
+          # o ffmpeg do sistema (completo) gera os arquivos de teste; o motor usa o compilado (DESTILA_FERRAMENTAS)
           "$DESTILA_FERRAMENTAS/ffmpeg" -hide_banner -encoders | grep -E "libmp3lame|libopus|libvorbis"
           cargo test --release -p motor
       - name: Ferramentas Intel rodam (Rosetta)
